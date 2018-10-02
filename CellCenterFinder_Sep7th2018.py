@@ -1,6 +1,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
+import math  
 
 ####################### functions ###############
 def centerPlot(cellCenterX, cellCenterY) : 
@@ -15,45 +16,48 @@ def centerPlot(cellCenterX, cellCenterY) :
     plt.show() 
 
 
-####################### input parameter data ###############
-nPouchCells=29  
-nPeripCells=6
+####################### input parameter data  ###############
+nPouchCells=65# 29  
+nPeripCells=11 #6
 nBcCells=5 # each side
 
-lumen=2 
+lumen=6 #2 
 
+wPouch=2.5 #2 
+hPouchA=25 #10   height of the paouch cells at the front of cell center if we rotate CCW
+hPouchB=25 #10   height of the paouch cells at the front of cell center if we rotate CCW
 
-wPouch=2 
-hPouchA=10
-hPouchB=10 
+bNodePouch=18 #14  #number of basal node
+aNodePouch=18 #14 #number of apical nodes
+lNodePouchA=aNodePouch*10    #5
+lNodePouchB=aNodePouch*10    #5
 
-bNodePouch=14  #number of basal node
-aNodePouch=14 #number of apical nodes
-lNodePouchA=aNodePouch*5
-lNodePouchB=aNodePouch*5
+wPerip=16.4 #10 +0.92783  
+hPerip=4  #2 
 
-wPerip=10 +0.92783  
-hPerip=2 
+bNodePerip=4*28  #number of basal node
+aNodePerip=4*28 #number of apical nodes
+lNodePerip=28   #14
 
-bNodePerip=5*14  #number of basal node
-aNodePerip=5*14 #number of apical nodes
-lNodePerip=14
-
-cellTotalNode=168
 
 domainMinX=-1.394 
 cellsGapX=0.329  
 domainMinY=14.3  
 domainMaxY=domainMinY+hPouchA+lumen+hPerip  
 
-bNodeBc=12  #number of basal node
-aNodeBc=12 #number of apical nodes
-lNodeBc=12
+bNodeBc=30 #12  #number of basal node
+aNodeBc=30 #12 #number of apical nodes
+lNodeBc=30 #12
 
-buffer_ECM=0.525  
-numECMBCNodes=100 ## for one side 
+ 
+ # 100 ## for one side nPouchCells=29  
+correctionFactorECMBCY=-0.25
 
-rBc=1  ## radius of boundary cells initialized with circular shape
+buffer_ECM=0.525 
+rBc=2.5 ## radius of boundary cells initialized with circular shape
+dhECM=0.1
+enlargeR=rBc+buffer_ECM
+
 
 ################## calculation of coordinate of cell centers ######################
 cellCenterPouchX=[domainMinX+cellsGapX+wPouch/2] 
@@ -167,37 +171,44 @@ typeC=[]
 for k in range ( nPouchCells ) :
     lastpoint=0 
     if k==0 :
-        lNodePouchB=14
-        lNodePouchA=42
-        hPouchB=2
-        hPouchA=6
-        dh=2
-        
+        lNodePouchB=36 #14
+        lNodePouchA=108 #42
+        aNodePouch=40
+        bNodePouch=40
+        hPouchB=5  #2
+        hPouchA=15 #6
+            
     elif  k==(nPouchCells-1) :
-        lNodePouchB=42
-        lNodePouchA=14
-        hPouchB=6
-        hPouchA=2
-        dh=2
+        lNodePouchB=108 #42
+        lNodePouchA=36 #14
+        aNodePouch=40
+        bNodePouch=40
+        hPouchB=15 #6
+        hPouchA=5  #2 
     elif k==1 :
-        lNodePouchB=42
-        lNodePouchA=70
-        hPouchB=6
-        hPouchA=10
-        dh=2
+        lNodePouchB=108 #42
+        lNodePouchA=180
+        aNodePouch=40
+        bNodePouch=40
+        hPouchB=15 #6
+        hPouchA=25 #10  
     elif k==(nPouchCells-2) :
-        lNodePouchB=70
-        lNodePouchA=42
-        hPouchB=10
-        hPouchA=6
-        dh=2
+        lNodePouchB=180
+        lNodePouchA=108 # 42
+        aNodePouch=40
+        bNodePouch=40
+        hPouchB=25 #10
+        hPouchA=15 #6
     else:
-        lNodePouchB=70
-        lNodePouchA=70
-        hPouchB=10
-        hPouchA=10
-        dh=0
+        lNodePouchB=180
+        lNodePouchA=180 # 42
+        aNodePouch=18
+        bNodePouch=18
+        hPouchB=25 #10
+        hPouchA=25 #6
 
+       
+    dh=0.5*abs (hPouchA-hPouchB)
     cellTotalNodePouch=lNodePouchB+lNodePouchA+bNodePouch+aNodePouch
     xC.append ( [0 for x in range ( cellTotalNodePouch)] )
     yC.append ( [0 for x in range ( cellTotalNodePouch)] )
@@ -229,8 +240,8 @@ for k in range ( nPouchCells ) :
     for i  in range (lNodePouchB) :
         j=lastpoint+i 
         typeC[k][j]='lateralB'
-        xC[k][j]=cellCenterX[k]-wPouch/2 
-        yC[k][j]=cellCenterY[k]+hPouchB/2  - i/lNodePouchB*hPouchB 
+        xC[k][j]=cellCenterX[k]-wPouch/2.0 
+        yC[k][j]=cellCenterY[k]+hPouchB/2.0  - i/lNodePouchB*hPouchB 
 
 
     lastpoint=lastpoint+ lNodePouchB 
@@ -444,7 +455,7 @@ fileM = open('coordinate_Membrane3.txt','w')
  
 #fileM.write('cellID,x coordinate, y coordinate, nodeType\n') 
 for i in range ( numCells ) :
-    for j in range (numNode [i]):
+    for j in range (numNode [i]): # number of membrane nodes for that cell
         #fileM.write(str(i) +"," +str (xC[i][j])   )  #,yC[i][j],typeC[i][j]) 
         fileM.write('{}'.format(i))
         fileM.write(' ')
@@ -461,44 +472,106 @@ fileM.close()
 xECM=[]
 yECM=[]
 eCMType=[]
+numECMnodesCount=0
 
-################# calculation of coordinates of pouch side ECM ####################
+
+
+## ###########ECM nodes location below the non-rectangular pouch cells at the Left ################
+
+
+
+maxY=0 # small number
+for i in range (len(yC[0])) :   
+    if yC[0][i]>maxY and typeC[0][i]=='basal1' :
+        maxY=yC[0][i]
+
+x1=min (xC[0])   
+y1=maxY  ## of basal nodes in cell with id zero 
+x2=(max(xC[1]))
+y2=(min (yC[1]))
+
+m=(y2-y1)/(x2-x1)
+b=y1-m*x1
+
+
+xECM.append(x1) 
+yECM.append(y1-buffer_ECM) 
+eCMType.append ('excm')
 i=0
-for k in range ( numCells ) :
-    for j in range (numNode [k]):
-        if typeC[k][j]=='basal1':
-            if  cellType[k] =='pouch': 
-                xECM.append(xC[k][j]) 
-                yECM.append(yC[k][j]-buffer_ECM) 
-                eCMType.append ('excm')
-                i=i+1
+while xECM[numECMnodesCount]<max (xC[1]):
+    i=i+1
+    xTmp=x1+i*dhECM/math.sqrt(1+m*m)
+    xECM.append(xTmp)      #/max (xC[62])-min (xC[2])) 
+    yECM.append(m*xTmp+b-buffer_ECM)
+    eCMType.append ('excm')
+    numECMnodesCount+=1
+
+
+################## pouch cells  uniform in size
+
+
+i=-1
+while xECM[numECMnodesCount]<max (xC[62]):
+    i=i+1
+    xECM.append(min (xC[2]) +i*dhECM)        #/max (xC[62])-min (xC[2])) 
+    yECM.append(min (yC[2])-buffer_ECM)
+    eCMType.append ('excm')
+    numECMnodesCount+=1
+
+
+# ###########ECM nodes location below the non-rectangular pouch cells at the Right ################
+
+
+
+maxY=0  # small number
+for i in range (len(yC[64])) :   
+    if yC[64][i]>maxY and typeC[64][i]=='basal1' :
+        maxY=yC[0][i]
+
+x1=min (xC[63])   
+y1=min (yC[63])
+x2=(max(xC[64]))
+y2=maxY # for the basal nodes
+
+m=(y2-y1)/(x2-x1)
+b=y1-m*x1
+
+i=-1
+while xECM[numECMnodesCount]<max (xC[64]):
+    i=i+1
+    xTmp=x1+i*dhECM/math.sqrt(1+m*m)
+    xECM.append(xTmp)    
+    yECM.append(m*xTmp+b-buffer_ECM)
+    eCMType.append ('excm')
+    numECMnodesCount+=1
 
 ################# calculation of coordinates of ECM nodes which are neighbor with right hand side BC cells ####################
-enlargeR=rBc+buffer_ECM
+numECMBCNodes=int ( np.pi *(radiusBc+enlargeR)/dhECM)
 for k in range ( numECMBCNodes) :
     xECM.append(centerRightBcX +(radiusBc+enlargeR)*np.sin ( (k+1)*np.pi/(numECMBCNodes+1) ))
-    yECM.append(centerRightBcY- (radiusBc+enlargeR)*np.cos ( (k+1)*np.pi/(numECMBCNodes+1) ))
+    yECM.append(centerRightBcY+correctionFactorECMBCY- (radiusBc+enlargeR)*np.cos ( (k+1)*np.pi/(numECMBCNodes+1) ))
     eCMType.append ('bc2')
-    i=i+1
+    numECMnodesCount+=1
 
 ################# calculation of coordinates of peripodial side ECM ####################
-for k in range ( numCells ) :
-    for j in range (numNode [k]):
-         if typeC[k][j]=='basal1':
-            if  cellType[k] =='peri': 
-                xECM.append(xC[k][j])
-                yECM.append(yC[k][j]+buffer_ECM) 
-                eCMType.append ('perip')
-                i=i+1
-            
+
+
+i=-1 # local counter
+while xECM[numECMnodesCount]>min (xC[80]):
+    i=i+1
+    xECM.append(max (xC[70]) -i*dhECM)       
+    yECM.append(max (yC[70])+buffer_ECM)
+    eCMType.append ('perip')
+    numECMnodesCount+=1
+
 ################# calculation of coordinates of ECM nodes which are neighbor with left hand side BC cells ####################
 for k in range ( numECMBCNodes) :
     xECM.append(  centerLeftBcX- (radiusBc+enlargeR)*np.sin ((k+1)*np.pi/(numECMBCNodes+1)) )
-    yECM.append(  centerLeftBcY+ (radiusBc+enlargeR)*np.cos ((k+1)*np.pi/(numECMBCNodes+1)) ) 
+    yECM.append(  centerLeftBcY+correctionFactorECMBCY+ (radiusBc+enlargeR)*np.cos ((k+1)*np.pi/(numECMBCNodes+1)) ) 
     eCMType.append ('bc2')
-    i=i+1
+    numECMnodesCount+=1
 
-numECMnodes=i
+
 
 ########################### plotting ECM nodes ##################################################
 plt.scatter(xECM, yECM, color="k")
@@ -509,8 +582,8 @@ plt.show()
 fileM = open('coordinate_ECM16.txt','w') 
  
 #fileM.write('cellID,x coordinate, y coordinate, nodeType\n')
-fileM.write('{}\n'.format(numECMnodes)) 
-for k in range ( numECMnodes ) :
+fileM.write('{}\n'.format(numECMnodesCount)) 
+for k in range ( numECMnodesCount ) :
         #fileM.write(str(i) +"," +str (xC[i][j])   )  #,yC[i][j],typeC[i][j]) 
         fileM.write('{0:.4f}'.format(xECM[k]))
         fileM.write(' ')
