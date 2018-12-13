@@ -21,23 +21,23 @@ nPouchCells=65# 29
 nPeripCells=11 #6
 nBcCells=5 # each side
 
-lumen=6 #2 
+lumen=2 #2 
 
 wPouch=2.5 #2 
 hPouchA=25 #10   height of the paouch cells at the front of cell center if we rotate CCW
 hPouchB=25 #10   height of the paouch cells at the front of cell center if we rotate CCW
 
-bNodePouch=18 #14  #number of basal node
-aNodePouch=18 #14 #number of apical nodes
+bNodePouch=9 #18 #14  #number of basal node
+aNodePouch=9 #18 #14 #number of apical nodes
 lNodePouchA=aNodePouch*10    #5
 lNodePouchB=aNodePouch*10    #5
 
 wPerip=16.4 #10 +0.92783  
 hPerip=4  #2 
 
-bNodePerip=4*28  #number of basal node
-aNodePerip=4*28 #number of apical nodes
-lNodePerip=28   #14
+bNodePerip=4*14 #4*28  #number of basal node
+aNodePerip=4*14 #4*28 #number of apical nodes
+lNodePerip=14 #28   #14
 
 
 domainMinX=-1.394 
@@ -45,16 +45,16 @@ cellsGapX=0.329
 domainMinY=14.3  
 domainMaxY=domainMinY+hPouchA+lumen+hPerip  
 
-bNodeBc=30 #12  #number of basal node
-aNodeBc=30 #12 #number of apical nodes
-lNodeBc=30 #12
+bNodeBc=14 #30 #12  #number of basal node  ## needs to be even number
+aNodeBc=14 #30 #12 #number of apical nodes ## needs to be even number
+lNodeBc=14 #30 #12 ## needs to be even number
 
  
  # 100 ## for one side nPouchCells=29  
 correctionFactorECMBCY=-0.25
 
 buffer_ECM=0.525 
-rBc=2.5 ## radius of boundary cells initialized with circular shape
+rBc=2.25 ## radius of boundary cells initialized with circular shape
 dhECM=0.1
 enlargeR=rBc+buffer_ECM
 
@@ -166,44 +166,46 @@ fileM.close()
 xC=[]  ## for k =0 to create the list
 yC=[]  ## for k =0 to create the list
 typeC=[]
+dpp=[]
+
 
 ############ finding membrane nodes location of pouch cells #######################
 for k in range ( nPouchCells ) :
     lastpoint=0 
     if k==0 :
-        lNodePouchB=36 #14
-        lNodePouchA=108 #42
-        aNodePouch=40
-        bNodePouch=40
+        lNodePouchB=18 #36 #14
+        lNodePouchA=54 #108 #42
+        aNodePouch=20  #40
+        bNodePouch=20  #40
         hPouchB=5  #2
         hPouchA=15 #6
             
     elif  k==(nPouchCells-1) :
-        lNodePouchB=108 #42
-        lNodePouchA=36 #14
-        aNodePouch=40
-        bNodePouch=40
-        hPouchB=15 #6
+        lNodePouchB=54 #108 #42
+        lNodePouchA=18 #36 #14
+        aNodePouch=20 #40
+        bNodePouch=20 #40
+        hPouchB=15   #15 #6
         hPouchA=5  #2 
     elif k==1 :
-        lNodePouchB=108 #42
-        lNodePouchA=180
-        aNodePouch=40
-        bNodePouch=40
+        lNodePouchB=54 #108 #42
+        lNodePouchA=90 #180
+        aNodePouch=20 #40
+        bNodePouch=20 #40
         hPouchB=15 #6
         hPouchA=25 #10  
     elif k==(nPouchCells-2) :
-        lNodePouchB=180
-        lNodePouchA=108 # 42
-        aNodePouch=40
-        bNodePouch=40
+        lNodePouchB=90 #180
+        lNodePouchA=54 #108 # 42
+        aNodePouch=20 #40
+        bNodePouch=20 #40
         hPouchB=25 #10
         hPouchA=15 #6
     else:
-        lNodePouchB=180
-        lNodePouchA=180 # 42
-        aNodePouch=18
-        bNodePouch=18
+        lNodePouchB=90 #180
+        lNodePouchA=90 #180 # 42
+        aNodePouch=9 #18
+        bNodePouch=9 #18
         hPouchB=25 #10
         hPouchA=25 #6
 
@@ -212,8 +214,9 @@ for k in range ( nPouchCells ) :
     cellTotalNodePouch=lNodePouchB+lNodePouchA+bNodePouch+aNodePouch
     xC.append ( [0 for x in range ( cellTotalNodePouch)] )
     yC.append ( [0 for x in range ( cellTotalNodePouch)] )
+    dpp.append ( [0 for x in range ( cellTotalNodePouch)] )
     typeC.append ( ['notAssigned1' for x in range ( cellTotalNodePouch)] ) 
-
+    
     # from center to top equal to H/2
     for i  in range (int(lNodePouchA/2))  :
         j=lastpoint+i 
@@ -274,6 +277,7 @@ for k in range ( nPouchCells,nPouchCells+int(nBcCells) ) :
     typeC.append ( ['notAssigned1' for x in range ( cellTotalNodeBc)] ) 
     xC.append ( [0 for x in range ( cellTotalNodeBc)] )
     yC.append ( [0 for x in range ( cellTotalNodeBc)] ) 
+    dpp.append ( [0 for x in range ( cellTotalNodeBc)] )
 
     # from center to top equal to H/2
     for i  in range (int(lNodeBc/2))  :
@@ -332,6 +336,7 @@ for k in range ( nPouchCells+int(nBcCells),nPouchCells+int(nBcCells)+nPeripCells
     typeC.append ( ['notAssigned1' for x in range ( cellTotalNodePerip)] )
     xC.append ( [0 for x in range ( cellTotalNodePerip)] )
     yC.append ( [0 for x in range ( cellTotalNodePerip)] ) 
+    dpp.append ( [0 for x in range ( cellTotalNodePerip)] )
     # from center to top equal to H/2
     for i  in range (int(lNodePerip/2))  :
         j=lastpoint+i
@@ -380,6 +385,7 @@ for k in range ( nPouchCells+nPeripCells+int(nBcCells),nPouchCells+nPeripCells+i
     typeC.append ( ['notAssigned1' for x in range ( cellTotalNodeBc)] )
     xC.append ( [0 for x in range ( cellTotalNodeBc)] )
     yC.append ( [0 for x in range ( cellTotalNodeBc)] ) 
+    dpp.append ( [0 for x in range ( cellTotalNodeBc)] )
     # from center to top equal to H/2
     for i  in range (int(lNodeBc/2))  :
         j=lastpoint+i 
@@ -429,9 +435,42 @@ for k in range ( nPouchCells+nPeripCells+int(nBcCells),nPouchCells+nPeripCells+i
         yC[k][j]=cellCenterY[k]+ rBc*np.sin(angle)
 
 
+
+
+## calculate DPP level for each cells ##################################
+numNode=[0 for x in range (numCells)]
+#num_Node=[ 0 for x in range (numCells) ]
+totalNode=0 
+for k in range ( numCells ) :
+    numNode [k]= len (xC[k]) 
+    totalNode=totalNode+numNode [k]
+
+
+counter=0
+sumCoordX=0
+for i in range ( numCells ) :
+    for j in range (numNode [i]): # number of membrane nodes for that cell
+        sumCoordX=sumCoordX+ xC[i][j]
+        counter=counter+1 
+
+tissueCenterX=sumCoordX/counter
+
+maxEachCell=[0 for x in range (numCells)]
+for i in range ( numCells ) : 
+        maxEachCell[i]=np.amax (xC[i])
+
+maxXC=np.amax ( maxEachCell)
+        
+
+
+for i in range ( numCells ) :
+    for j in range (numNode [i]): # number of membrane nodes for that cell
+       dpp[i][j]=max ( 1.0 - abs (tissueCenterX-xC[i][j])/abs (tissueCenterX-maxXC),0.0 )
+
 ######################## plot membrane nodes locations #########################
 for k in range ( numCells ) :   
-    plt.scatter(xC[k], yC[k])
+    
+    plt.scatter(xC[k], yC[k], c=dpp[k], vmin=0, vmax=1)
     plt.gca().set_aspect('equal', adjustable='box')
 #plt.xlabel('X (micro meter)')
 #plt.ylabel('Y (micro meter)')
@@ -441,17 +480,11 @@ for k in range ( numCells ) :
 #plt.show() 
 
 #centerPlot(xC[0], yC[0]) 
-
-
 ######################## write membrane nodes location and type #########################
-numNode=[0 for x in range (numCells)]
-#num_Node=[ 0 for x in range (numCells) ]
-totalNode=0 
-for k in range ( numCells ) :
-    numNode [k]= len (xC[k]) 
-    totalNode=totalNode+numNode [k]
 
-fileM = open('coordinate_Membrane3.txt','w') 
+
+
+fileM = open('coordinate_Membrane7.txt','w') 
  
 #fileM.write('cellID,x coordinate, y coordinate, nodeType\n') 
 for i in range ( numCells ) :
@@ -463,7 +496,11 @@ for i in range ( numCells ) :
         fileM.write(' ')
         fileM.write('{0:.4f}'.format(yC[i][j]))
         fileM.write(' ')
+        fileM.write('{0:.4f}'.format(dpp[i][j]))
+        fileM.write(' ')
         fileM.write('{}\n'.format(typeC[i][j]))
+       
+        
 
 fileM.close() 
 
@@ -494,14 +531,14 @@ m=(y2-y1)/(x2-x1)
 b=y1-m*x1
 
 
-xECM.append(x1) 
+xECM.append(x1-0.15) 
 yECM.append(y1-buffer_ECM) 
 eCMType.append ('excm')
 i=0
 while xECM[numECMnodesCount]<max (xC[1]):
     i=i+1
     xTmp=x1+i*dhECM/math.sqrt(1+m*m)
-    xECM.append(xTmp)      #/max (xC[62])-min (xC[2])) 
+    xECM.append(xTmp-0.15)      #/max (xC[62])-min (xC[2])) 
     yECM.append(m*xTmp+b-buffer_ECM)
     eCMType.append ('excm')
     numECMnodesCount+=1
@@ -540,7 +577,7 @@ i=-1
 while xECM[numECMnodesCount]<max (xC[64]):
     i=i+1
     xTmp=x1+i*dhECM/math.sqrt(1+m*m)
-    xECM.append(xTmp)    
+    xECM.append(xTmp+0.1)    
     yECM.append(m*xTmp+b-buffer_ECM)
     eCMType.append ('excm')
     numECMnodesCount+=1
