@@ -21,23 +21,23 @@ nPouchCells=65# 29
 nPeripCells=11 #6
 nBcCells=5 # each side
 
-lumen=2 #2 
+lumen=6 #2 
 
 wPouch=2.5 #2 
 hPouchA=25 #10   height of the paouch cells at the front of cell center if we rotate CCW
 hPouchB=25 #10   height of the paouch cells at the front of cell center if we rotate CCW
 
-bNodePouch=9 #18 #14  #number of basal node
-aNodePouch=9 #18 #14 #number of apical nodes
+bNodePouch=18 #14  #number of basal node
+aNodePouch=18 #14 #number of apical nodes
 lNodePouchA=aNodePouch*10    #5
 lNodePouchB=aNodePouch*10    #5
 
 wPerip=16.4 #10 +0.92783  
 hPerip=4  #2 
 
-bNodePerip=4*14 #4*28  #number of basal node
-aNodePerip=4*14 #4*28 #number of apical nodes
-lNodePerip=14 #28   #14
+bNodePerip=4*28  #number of basal node
+aNodePerip=4*28 #number of apical nodes
+lNodePerip=28   #14
 
 
 domainMinX=-1.394 
@@ -45,16 +45,16 @@ cellsGapX=0.329
 domainMinY=14.3  
 domainMaxY=domainMinY+hPouchA+lumen+hPerip  
 
-bNodeBc=14 #30 #12  #number of basal node  ## needs to be even number
-aNodeBc=14 #30 #12 #number of apical nodes ## needs to be even number
-lNodeBc=14 #30 #12 ## needs to be even number
+bNodeBc=30 #12  #number of basal node  ## needs to be even number
+aNodeBc=30 #12 #number of apical nodes ## needs to be even number
+lNodeBc=30 #12 ## needs to be even number
 
  
  # 100 ## for one side nPouchCells=29  
 correctionFactorECMBCY=-0.25
 
 buffer_ECM=0.525 
-rBc=2.25 ## radius of boundary cells initialized with circular shape
+rBc=2.5 ## radius of boundary cells initialized with circular shape
 dhECM=0.1
 enlargeR=rBc+buffer_ECM
 
@@ -139,7 +139,7 @@ centerPlot(cellCenterX, cellCenterY)
 
 ####################### Write cell centers locations as an output file #####################
 
-fileM = open('coordinate_Cell16.txt','w') 
+fileM = open('coordinate_Cell20.txt','w') 
 
 numCells= nPouchCells + nPeripCells + 2*nBcCells 
 fileM.write('{}\n'.format(numCells))
@@ -173,39 +173,39 @@ dpp=[]
 for k in range ( nPouchCells ) :
     lastpoint=0 
     if k==0 :
-        lNodePouchB=18 #36 #14
-        lNodePouchA=54 #108 #42
-        aNodePouch=20  #40
-        bNodePouch=20  #40
+        lNodePouchB=36 #14
+        lNodePouchA=108 #42
+        aNodePouch=40
+        bNodePouch=40
         hPouchB=5  #2
         hPouchA=15 #6
             
     elif  k==(nPouchCells-1) :
-        lNodePouchB=54 #108 #42
-        lNodePouchA=18 #36 #14
-        aNodePouch=20 #40
-        bNodePouch=20 #40
+        lNodePouchB=108 #42
+        lNodePouchA=36 #14
+        aNodePouch=40
+        bNodePouch=40
         hPouchB=15   #15 #6
         hPouchA=5  #2 
     elif k==1 :
-        lNodePouchB=54 #108 #42
-        lNodePouchA=90 #180
-        aNodePouch=20 #40
-        bNodePouch=20 #40
+        lNodePouchB=108 #42
+        lNodePouchA=180
+        aNodePouch=40
+        bNodePouch=40
         hPouchB=15 #6
         hPouchA=25 #10  
     elif k==(nPouchCells-2) :
-        lNodePouchB=90 #180
-        lNodePouchA=54 #108 # 42
-        aNodePouch=20 #40
-        bNodePouch=20 #40
+        lNodePouchB=180
+        lNodePouchA=108 # 42
+        aNodePouch=40
+        bNodePouch=40
         hPouchB=25 #10
         hPouchA=15 #6
     else:
-        lNodePouchB=90 #180
-        lNodePouchA=90 #180 # 42
-        aNodePouch=9 #18
-        bNodePouch=9 #18
+        lNodePouchB=180
+        lNodePouchA=180 # 42
+        aNodePouch=18
+        bNodePouch=18
         hPouchB=25 #10
         hPouchA=25 #6
 
@@ -531,14 +531,14 @@ m=(y2-y1)/(x2-x1)
 b=y1-m*x1
 
 
-xECM.append(x1-0.15) 
+xECM.append(x1) 
 yECM.append(y1-buffer_ECM) 
 eCMType.append ('excm')
 i=0
 while xECM[numECMnodesCount]<max (xC[1]):
     i=i+1
     xTmp=x1+i*dhECM/math.sqrt(1+m*m)
-    xECM.append(xTmp-0.15)      #/max (xC[62])-min (xC[2])) 
+    xECM.append(xTmp)      #/max (xC[62])-min (xC[2])) 
     yECM.append(m*xTmp+b-buffer_ECM)
     eCMType.append ('excm')
     numECMnodesCount+=1
@@ -577,7 +577,7 @@ i=-1
 while xECM[numECMnodesCount]<max (xC[64]):
     i=i+1
     xTmp=x1+i*dhECM/math.sqrt(1+m*m)
-    xECM.append(xTmp+0.1)    
+    xECM.append(xTmp)    
     yECM.append(m*xTmp+b-buffer_ECM)
     eCMType.append ('excm')
     numECMnodesCount+=1
@@ -616,7 +616,7 @@ plt.show()
 
 
 ########################### writing as an output file ECM nodes locations and type ##################################################
-fileM = open('coordinate_ECM16.txt','w') 
+fileM = open('coordinate_ECM21.txt','w') 
  
 #fileM.write('cellID,x coordinate, y coordinate, nodeType\n')
 fileM.write('{}\n'.format(numECMnodesCount)) 
